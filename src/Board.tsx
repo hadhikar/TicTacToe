@@ -2,35 +2,39 @@ import { useState } from "react";
 import { calculateWinner } from "./CalculateWinner";
 import { Square } from "./Square";
 
-export default function Board() {
-    const [xIsNext, setXIsNext] = useState(true);
-    const [squares, setSquares] = useState(Array(9).fill(null));
-    const winner = calculateWinner(squares);
-    let status;
+interface IProps{
+  xIsNext: boolean;
+  squares: any[];
+  onPlay: any
+}
 
-    if(winner){
-        status = "Winner: " + winner;
-    } else {
-        status = "Next player: " + (xIsNext ? "X" : "O");
+export default function Board({ xIsNext, squares, onPlay }: IProps) {
+  // const [xIsNext, setXIsNext] = useState(true);
+  // const [squares, setSquares] = useState(Array(9).fill(null));
+  const winner = calculateWinner(squares);
+  let status;
+
+  if (winner) {
+    status = "Winner: " + winner;
+  } else {
+    status = "Next player: " + (xIsNext ? "X" : "O");
+  }
+  const handleClick = (i: number) => {
+    if (squares[i] || calculateWinner(squares)) {
+      return;
     }
-    const handleClick = (i: number) => {
-        if(squares[i] || calculateWinner(squares)){
-            return;
-        }
-        const nextSquares = squares.slice();
-        if(xIsNext){
-            nextSquares[i] = "X";
-        } else {
-            nextSquares[i] = "O";
-        }
-
-        setSquares(nextSquares);
-        setXIsNext(!xIsNext);
-    };
+    const nextSquares = squares.slice();
+    if (xIsNext) {
+      nextSquares[i] = "X";
+    } else {
+      nextSquares[i] = "O";
+    }
+    onPlay(nextSquares);
+  };
 
   return (
     <div className="board">
-        <div className="status">{status} </div>
+      <div className="status">{status} </div>
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
